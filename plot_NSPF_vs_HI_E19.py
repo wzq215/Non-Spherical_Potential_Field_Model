@@ -69,23 +69,23 @@ if __name__ == '__main__':
         search_end_dt = magmap_dt +timedelta(minutes=30)
         time_range = a.Time(search_begin_dt.strftime('%Y/%m/%d %H:%M'), search_end_dt.strftime('%Y/%m/%d %H:%M'))
 
-        # 搜索LASCO C2数据
+        # Search for LASCO C2 images
         query = Fido.search(time_range,
                            a.Instrument('LASCO'),
                            a.Detector('C2'))
-        # 指定缓存目录（可自定义）
-        cache_dir = '/Users/ephe/sunpy/data/'
 
-        # 检查本地是否已有相应文件
+        cache_dir = './solar_imgs/'
+        os.makedirs(cache_dir, exist_ok=True)
+
+
         downloaded_files = Fido.fetch(query, path=os.path.join(cache_dir, '{file}'), download=False, overwrite=False)
 
-        # 如果文件不存在，则下载
         missing_files = [f for f in downloaded_files if not os.path.exists(f)]
         if missing_files:
-            print(f"检测到 {len(missing_files)} 个缺失文件，正在下载...")
+            print(f"Detected {len(missing_files)} missing files，downloading...")
             downloaded_files = Fido.fetch(query, path=os.path.join(cache_dir, '{file}'))
         else:
-            print("所有文件已存在，直接读取。")
+            print("Files exist, loading...")
         # downloaded_files = Fido.fetch(query)
         # print(query)
         lasco_c2_map = sunpy.map.Map(downloaded_files[0])
@@ -105,26 +105,19 @@ if __name__ == '__main__':
         # downloaded_files = Fido.fetch(query)
         # print(downloaded_files)
 
-        # 指定缓存目录（可自定义）
-        cache_dir = '/Users/ephe/sunpy/data/'
-
-        # 检查本地是否已有相应文件
-        # downloaded_files = Fido.fetch(query, path=os.path.join(cache_dir, '{file}'), download=False, overwrite=False)
-        # print(downloaded_files)
-
-        # # 如果文件不存在，则下载
-        # missing_files = [f for f in downloaded_files if not os.path.exists(f)]
-        # if missing_files:
-        #     print(f"检测到 {len(missing_files)} 个缺失文件，正在下载...")
-        #     downloaded_files = Fido.fetch(query, path=os.path.join(cache_dir, '{file}'))
-        # else:
-        #     print("所有文件已存在，直接读取。")
-
-        downloaded_files = [cache_dir+'aia.lev1.171A_2024_03_28T02_03_33.35Z.image_lev1.fits']
-        secchi_map = sunpy.map.Map(downloaded_files[0])
+        downloaded_files = Fido.fetch(query, path=os.path.join(cache_dir, '{file}'), download=False, overwrite=False)
+        print(downloaded_files)
 
 
-        hi_map = secchi_map
+        missing_files = [f for f in downloaded_files if not os.path.exists(f)]
+        if missing_files:
+            print(f"Detected {len(missing_files)} missing files，downloading...")
+            downloaded_files = Fido.fetch(query, path=os.path.join(cache_dir, '{file}'))
+        else:
+            print("Files exist, loading...")
+
+        # downloaded_files = [cache_dir+'aia.lev1.171A_2024_03_28T02_03_33.35Z.image_lev1.fits']
+        hi_map = sunpy.map.Map(downloaded_files[0])
 
         # %%
         observer_coord = hi_map.observer_coordinate
@@ -165,10 +158,6 @@ if __name__ == '__main__':
         inner_mesh_slice = inner_mesh.slice(normal=fov_normal, origin=[0,0,0])
         inner_mesh_slice_HCI = convert_to_new_frame(inner_mesh_slice, corona_map)
 
-
-        # inner_Blines_slice_from_sun, outer_Blines_slice_from_sun = \
-        #     trace_from_photosphere_circle(PATH_RESULT, NAME_RESULT1, NAME_RESULT2, PATH_2D, NAME_SS,
-        #                                   normal=fov_normal, polar=circ_polar)
         inner_Blines_slice_from_sun, outer_Blines_slice_from_sun,_ = combine_in_out(PATH_RESULT, NAME_RESULT1, NAME_RESULT2,
                                                                                     PATH_2D, NAME_SS,
                                                                                     slice_normal = fov_normal,
@@ -176,7 +165,6 @@ if __name__ == '__main__':
 
         # %%
         inner_Blines_slice_from_sun_HCI = convert_to_new_frame(inner_Blines_slice_from_sun, hi_map)
-        # outer_Blines_slice_from_sun_HCI = convert_to_new_frame(outer_Blines_slice_from_sun, hi_map)
         outer_Blines_slice_from_sun_HCI = []
         for outer_Bline in outer_Blines_slice_from_sun:
             outer_Blines_slice_from_sun_HCI.append(convert_to_new_frame(outer_Bline, hi_map))
@@ -191,64 +179,22 @@ if __name__ == '__main__':
 
 # %%
         pv.set_plot_theme(pv.themes.DarkTheme())
-        p = SunpyPlotter(window_size=(1700, 1500))# [0.3,0.5,0.9,1.0]
-        # p.plot_map(corona_map, clip_interval=[1., 99.99] * u.percent,opacity=[0.0, 0.1, 0.2,0.5, 1.0],cmap='gray')
+        p = SunpyPlotter(window_size=(1700, 1500))
         p.plot_map(corona_map, clip_interval=[10, 99.7] * u.percent,
                    opacity=[0.0, 0.0, 1.0],
                    cmap='gray')
         p.plot_map(hi_map, clip_interval=[10,99]*u.percent,opacity=[0.0,0.9,1.])
-        # p.plot_map(outmap_default)
-        # p.plotter.add_mesh(inner_Blines_slice_HCI.tube(radius=0.01,),color='green',opacity=1)
-        # p.plotter.add_mesh(outer_Blines_slice_HCI.tube(radius=0.01,),color='green',opacity=1)
-        p.plotter.add_mesh(inner_mesh_slice_HCI,opacity=0.2,color='lightgreen',log_scale=True)
+
         inner_Blines_slice_from_sun_HCI.set_active_scalars('Br')
-        # p.plotter.add_mesh(inner_Blines_slice_from_sun_HCI.tube(radius=0.005,),cmap='coolwarm',clim=[-10.,10.],opacity=0.3)
+        p.plotter.add_mesh(inner_Blines_slice_from_sun_HCI.tube(radius=0.005,),cmap='coolwarm',clim=[-10.,10.],opacity=0.3)
         for Bline in outer_Blines_slice_from_sun_HCI:
             if len(Bline.points) > 0:
                 Bline.set_active_scalars('Br')
                 p.plotter.add_mesh(Bline,cmap='coolwarm',clim=[-.1,.1], opacity=[1.0,0.3,1.0],show_scalar_bar=False)
-        # p.plotter.add_mesh(inner_Blines.tube(radius=0.01, ), color='blue', )
-        # p.plotter.add_mesh(outer_Blines.tube(radius=0.01, ), color='green', )
-        # p.plotter.add_mesh(ss_mesh, opacity=0.5)
-        # p.plotter.add_slice_
-        # p.plotter.show_grid()
-        # p.plotter.add_title(magmap_dt.strftime('%Y/%m/%d %H:%M')+'\nNSPF 2.2Rs')
+        p.plotter.show_grid()
+        p.plotter.add_title(magmap_dt.strftime('%Y/%m/%d %H:%M')+'\nNSPF 2.2Rs')
         Rs2km=696300
         p.plotter.camera_position=np.array([observer_coord_HCI_x,observer_coord_HCI_y,observer_coord_HCI_z])/20.
-        # p.plotter.camera_focus=np.array([0.,0.,1.])*Rs2km
-        # p.plotter.camera.zoom(8)
         p.show()
-        # p.plotter.screenshot('NSPF_2.2_zoomin.png')
-        # p.plotter.close()
-# %%
-        pv.set_plot_theme(pv.themes.DarkTheme())
-        p = SunpyPlotter(window_size=(1700, 1700))  # [0.3,0.5,0.9,1.0]
-        # p.plot_map(corona_map, clip_interval=[1., 99.99] * u.percent,opacity=[0.0, 0.1, 0.2,0.5, 1.0],cmap='gray')
-        p.plot_map(corona_map, clip_interval=[10, 99.7] * u.percent,
-                   opacity=[0.0, 0.0, 1.0],
-                   cmap='gray')
-        p.plot_map(hi_map, clip_interval=[10, 99] * u.percent, opacity=[0.0, 0.9, 1.])
-        # p.plot_map(outmap_default)
-        # p.plotter.add_mesh(inner_Blines_slice_HCI.tube(radius=0.01,),color='green',opacity=1)
-        # p.plotter.add_mesh(outer_Blines_slice_HCI.tube(radius=0.01,),color='green',opacity=1)
-        # p.plotter.add_mesh(inner_mesh_slice_HCI, opacity=0.2, color='lightgreen', log_scale=True)
-        # inner_Blines_slice_from_sun_HCI.set_active_scalars('Br')
-        # # p.plotter.add_mesh(inner_Blines_slice_from_sun_HCI.tube(radius=0.005,),cmap='coolwarm',clim=[-10.,10.],opacity=0.3)
-        # for Bline in outer_Blines_slice_from_sun_HCI:
-        #     if len(Bline.points) > 0:
-        #         Bline.set_active_scalars('Br')
-        #         p.plotter.add_mesh(Bline, cmap='coolwarm', clim=[-.1, .1], opacity=[1.0, 0.3, 1.0],
-        #                            show_scalar_bar=False)
-        # p.plotter.add_mesh(inner_Blines.tube(radius=0.01, ), color='blue', )
-        # p.plotter.add_mesh(outer_Blines.tube(radius=0.01, ), color='green', )
-        # p.plotter.add_mesh(ss_mesh, opacity=0.5)
-        # p.plotter.add_slice_
-        # p.plotter.show_grid()
-        # p.plotter.add_title(magmap_dt.strftime('%Y/%m/%d %H:%M')+'\nNSPF 2.2Rs')
-        Rs2km = 696300
-        p.plotter.camera_position = np.array([observer_coord_HCI_x, observer_coord_HCI_y, observer_coord_HCI_z]) / 20.
-        # p.plotter.camera_focus=np.array([0.,0.,1.])*Rs2km
-        p.plotter.camera.zoom(5)
-        p.show()
-        p.plotter.screenshot('plain.png')
-        # p.plotter.close()
+        p.plotter.screenshot('NSPF_2.2_zoomin.png')
+        p.plotter.close()
