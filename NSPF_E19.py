@@ -1,5 +1,5 @@
 import os
-PROJECT_ROOT = '/Users/ephe/codes/NSPF_clean/'
+PROJECT_ROOT = '/Users/ephe/codes/NonSphericalPotentialField/'
 os.chdir(PROJECT_ROOT)
 import sys
 sys.path.insert(0,PROJECT_ROOT)
@@ -26,10 +26,10 @@ magmap_name_list = [ 'mrzqs240331t2104c2282_050', 'mrzqs240331t0304c2282_060',
                     'mrzqs240330t0914c2282_070', 'mrzqs240329t1514c2282_080',
                      'mrzqs240328t2004c2282_090','mrzqs240328t0204c2282_100']
 
-for i in range(6):
+for i in range(1):
     magmap_name = magmap_name_list[i]
     magmap_tag = magmap_name[-9:]
-    PATH_RESULT = 'RESULT/' + 'CR2282_E19_INPUT/NSPF_Rss2d5_Ref3_/'+magmap_tag[-3:]+'/'
+    PATH_RESULT = 'RESULT/' + 'CR2282_E19/NSPF_Rss2d5_Ref3/'+magmap_tag[-3:]+'/'
 
     MS_radius = 2.5
     SS_Br = -1

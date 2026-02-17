@@ -59,11 +59,11 @@ if __name__ == '__main__':
                     datetime(2024, 3, 30, 9, 14),
                     datetime(2024, 3, 31, 3, 4),
                     datetime(2024, 3, 31, 21, 4), ]
-    for i_result in [0]:
+    for i_result in [5]:
         tag_tmp = "{:03}".format((10-i_result) * 10)
         magmap_dt = datetime_lst[i_result]
         magmap_name = 'mrzqs' + magmap_dt.strftime('%Y%m%dt%H%M')[2:] + 'c2282_' + tag_tmp + '.fits.gz'
-        magmap_tmp = sunpy.map.Map('E19/magnetogram/' + magmap_name)
+        magmap_tmp = sunpy.map.Map('magnetogram/' + magmap_name)
 
         search_begin_dt = magmap_dt - timedelta(minutes=30)
         search_end_dt = magmap_dt +timedelta(minutes=30)
@@ -137,7 +137,7 @@ if __name__ == '__main__':
         # i_result=9
 
         OuterSphere_Rs = 10
-        MiddleSphere_Rs_str = '2d2'
+        MiddleSphere_Rs_str = '2d5'
         InnerSphere_Rs = 1
         CR_tag='c2282_'+tag_tmp
         SS_tag=''
