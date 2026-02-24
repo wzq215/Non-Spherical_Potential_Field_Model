@@ -48,7 +48,6 @@ for i in range(1):
                                                      magmap_pathfilename=PATH_MAGMAP+magmap_name+'.fits.gz',
                                                      magmap_tag=magmap_tag,
                                                      result_path=PATH_RESULT, )
-    # quit()
     # %%
     from ss_extractor import *
     ss0_path, ss0_name, ss0 = source_surface_extractor(result0_path, result0_name,
@@ -79,4 +78,10 @@ for i in range(1):
                                                      magmap_input=abs(ss_Btot),
                                                      magmap_lon_input=ss_lon,
                                                      magmap_lat_input=ss_lat)
+    # result2_path, result2_name, result2 = fem_solver(shell2_path, shell2_name,
+    #                                                  magmap_method='array',
+    #                                                  # const_br=abs(br_ss),
+    #                                                  abs_field=True,
+    #                                                  magmap_tag='array', result_path=PATH_RESULT,
+    #                                                  clm=clm_ss, l_max=30)
 
