@@ -192,8 +192,8 @@ def magflux_on_ss(filename_result, filename_ss,
 
 
 if __name__ == '__main__':
-    path_Result = 'RESULT/'
-    path_2D = 'MESH/2D/'
+    path_Result = '../RESULT/'
+    path_2D = '../MESH/2D/'
     name_Result = '((SphR3Ref2-SphR1Ref2_Ref0)dip_SS-SphR1Ref2_Ref0)dip'  # '((SphR3Ref2-SphR1Ref2_Ref0)c2158_SS-SphR1Ref2_Ref0)c2158'
     exportname = name_Result + '_SS'
     name_ss = '(SphR3Ref1-SphR1Ref1_Ref1)dip_SS'  # '(SphR3Ref2-SphR1Ref2_Ref0)c2158_SS'

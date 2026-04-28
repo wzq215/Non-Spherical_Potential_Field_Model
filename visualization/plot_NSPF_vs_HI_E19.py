@@ -3,11 +3,10 @@ import os
 
 import numpy as np
 
-from result_combiner import combine_in_out, combine_in_out_trace_from_photosphere, trace_from_photosphere_circle
+from src.fieldline_tracer import combine_in_out
 import sunpy.map
 from sunpy.net import Fido, attrs as a
 import astropy.units as u
-from astropy.io import fits
 from astropy.coordinates import SkyCoord
 import pyvista as pv
 from datetime import datetime,timedelta
@@ -74,7 +73,7 @@ if __name__ == '__main__':
                            a.Instrument('LASCO'),
                            a.Detector('C2'))
 
-        cache_dir = './solar_imgs/'
+        cache_dir = '../data/solar_imgs/'
         os.makedirs(cache_dir, exist_ok=True)
 
 
@@ -129,10 +128,10 @@ if __name__ == '__main__':
         observer_coord_carrington_z = observer_coord_carrington.represent_as('cartesian').z.value
 
         # %%
-        PATH_2D = 'MESH/2D/'
-        PATH_3D = 'MESH/3D/'
-        PATH_RESULT = 'RESULT/'
-        PATH_MAGMAP = 'magnetogram/'
+        PATH_2D = '../MESH/2D/'
+        PATH_3D = '../MESH/3D/'
+        PATH_RESULT = '../RESULT/'
+        PATH_MAGMAP = '../data/magnetogram/'
 
         # i_result=9
 

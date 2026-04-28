@@ -5,14 +5,13 @@ import sys
 sys.path.insert(0,PROJECT_ROOT)
 
 # MY MODULES
-from shell_generator import shell_generator
-from field_solver import fem_solver
-from ss_extractor import source_surface_extractor, br_on_ss
+from src.shell_generator import shell_generator
+from src.field_solver import fem_solver
 
-PATH_2D = 'MESH/2D/'
-PATH_3D = 'MESH/3D/'
-PATH_RESULT = 'RESULT/'
-PATH_MAGMAP = 'magnetogram/'
+PATH_2D = '../MESH/2D/'
+PATH_3D = '../MESH/3D/'
+PATH_RESULT = '../RESULT/'
+PATH_MAGMAP = '../data/magnetogram/'
 
 
 
@@ -49,7 +48,7 @@ for i in range(1):
                                                      magmap_tag=magmap_tag,
                                                      result_path=PATH_RESULT, )
     # %%
-    from ss_extractor import *
+    from src.ss_extractor import *
     ss0_path, ss0_name, ss0 = source_surface_extractor(result0_path, result0_name,
                                                        Rss=MS_radius,
                                                        ss_Btot=SS_Br,ss_tag=ss_tag,

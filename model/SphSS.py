@@ -1,15 +1,13 @@
 import os
 
-import pyvista
-import sunpy.map
-from shell_generator import shell_generator
-from field_solver import fem_solver
-from ss_extractor import source_surface_extractor, br_on_ss, br_on_ss_interp
+from src.shell_generator import shell_generator
+from src.field_solver import fem_solver
+from src.ss_extractor import br_on_ss
 
-PATH_2D = 'MESH/2D/'
-PATH_3D = 'MESH/3D/'
-PATH_RESULT = 'RESULT/'
-PATH_MAGMAP = 'magnetogram/'
+PATH_2D = '../MESH/2D/'
+PATH_3D = '../MESH/3D/'
+PATH_RESULT = '../RESULT/'
+PATH_MAGMAP = '../data/magnetogram/'
 
 ###### USER INPUT BEGIN ######
 IB_name = 'SphR1Ref3'
