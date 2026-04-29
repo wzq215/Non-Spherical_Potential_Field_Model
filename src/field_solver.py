@@ -27,9 +27,102 @@ from petsc4py.PETSc import ScalarType
 import math
 from scipy import interpolate
 import sunpy.map
+import sympy as sp
 
 # MY MODULE
 import utils
+
+def magmap_from_array(x, clm=[], l_max=30, **kwargs):
+    """
+    Construct the inner-boundary magnetic field from spherical harmonic
+    coefficients.
+
+    This function reconstructs the radial magnetic field on the inner
+    boundary using spherical harmonic coefficients (g_lm, h_lm) provided
+    in `clm`. The resulting field is expressed symbolically and evaluated
+    as a UFL expression for use in the finite-element weak formulation.
+
+    Notes
+    -----
+    - This implementation uses symbolic operations (SymPy) combined with
+      UFL expressions and is not optimized for performance.
+    - It is intended for low spherical harmonic degrees (l_max ≲ 30),
+      validation, and comparison studies.
+    - This method should not be used for large-scale production runs due
+      to its high computational cost.
+
+    Parameters
+    ----------
+    x : ufl.SpatialCoordinate
+        Spatial coordinate in the finite-element domain.
+    clm : ndarray
+        Spherical harmonic coefficients with shape (2, l_max+1, l_max+1),
+        where clm[0, l, m] = g_lm and clm[1, l, m] = h_lm.
+    l_max : int, optional
+        Maximum spherical harmonic degree used in the reconstruction.
+    **kwargs :
+        Reserved for future extensions.
+
+    Returns
+    -------
+    magmap : ufl.Expression
+        Symbolic UFL expression representing the radial magnetic field
+        on the inner boundary.
+    """
+
+    print('Generating magmap from input sph_array. Lmax=' + str(l_max))
+
+    # Load spherical harmonic coefficients
+    # g_lm (cosine terms) and h_lm (sine terms)
+    glm_array = clm[0, :, :]
+    hlm_array = clm[1, :, :]
+
+    # Define colatitude cosine and longitude in Carrington coordinates
+    cos_colat = x[2] / (x[0] ** 2 + x[1] ** 2 + x[2] ** 2) ** (1 / 2)
+
+    # Longitude definition ensures full [0, 2π) coverage
+    lon = (
+        ufl.acos(x[0] / ufl.sqrt(x[0] ** 2 + x[1] ** 2))
+        * ufl.sign(x[1])
+        + ufl.pi
+        - ufl.sign(x[1]) * ufl.pi
+    )
+
+    # Symbolic variables for spherical harmonic expansion
+    COSCOLAT, LON = sp.symbols('cos_colat, lon')
+
+    # Initialize symbolic magnetic field expression
+    Br = sp.symbols('0.')
+
+    # Spherical harmonic reconstruction of Br
+    # Br(θ, φ) = Σ_l Σ_m P_l^m(cosθ)
+    #             [ g_lm cos(mφ) + h_lm sin(mφ) ]
+    for i_l in range(l_max + 1):
+        for i_m in range(i_l + 1):
+
+            print('l: ', i_l, '; m:', i_m)
+
+            # Associated Legendre function with Schmidt normalization
+            Plm = sp.N(
+                sp.assoc_legendre(i_l, i_m, COSCOLAT)
+                * (2 * math.factorial(i_l - i_m)
+                   / math.factorial(i_l + i_m)) ** (1 / 2)
+            )
+
+            Br = sp.N(
+                Br
+                + Plm
+                * (
+                    glm_array[i_l, i_m] * sp.cos(i_m * LON)
+                    + hlm_array[i_l, i_m] * sp.sin(i_m * LON)
+                )
+            )
+
+    # Convert symbolic expression to UFL-compatible expression
+    magmap = eval(str(Br))
+
+    return magmap
+
 
 def calculate_B_field(mesh_u):
     """
@@ -64,7 +157,6 @@ def calculate_B_field(mesh_u):
 
 
 def fem_solver(shell_path, shell_name,
-
                magmap_method='dipole', magmap_pathfilename='',
                abs_field=False, magmap_tag='',
                magmap_from='fits', magmap_input=None,
@@ -85,10 +177,6 @@ def fem_solver(shell_path, shell_name,
         Path to the Gmsh mesh file.
     shell_name : str
         Name of the spherical shell mesh (without extension).
-    inner_boundary_marker : int
-        Boundary marker ID for the inner spherical surface.
-    outer_boundary_marker : int
-        Boundary marker ID for the outer spherical surface.
     magmap_method : str
         Method used to construct the boundary magnetic field.
         Options include 'interp' and analytic models (e.g., 'dipole').
@@ -187,6 +275,8 @@ def fem_solver(shell_path, shell_name,
         b0 = 100.
         print('Generating Dipole field with B0=' + str(b0) + '(nT)')
         magmap = -b0 / (4 * np.pi * 1e-7) * x[2] / (x[0] ** 2 + x[1] ** 2 + x[2] ** 2) ** (1 / 2)
+    elif magmap_method == 'array':
+        magmap = magmap_from_array(x, abs_field=abs_field, **kwargs)
 
     # --- Weak form of the Laplace equation ---
     # ∫ ∇Φ · ∇v dΩ = - ∫ B_n v dS
