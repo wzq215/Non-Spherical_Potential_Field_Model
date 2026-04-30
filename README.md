@@ -100,7 +100,7 @@ This project is released under the MIT License.
 See the LICENSE file for details.
 
 ## 6. Citation
-Please cite Wu et al. (2026), ApJS, under review if you use this code in your research.
+Please cite Wu et al. (2026), ApJS, under review and the Zenodo repository if you use this code in your research.
 ~~~
 @ARTICLE{2026arXiv260401028W,
        author = {{Wu}, Ziqi and {He}, Jiansen and {Hou}, Chuanpeng and {van Doorsselaere}, Tom and {Zhuo}, Rui and {Chen}, Tianhang and {Yang}, Liping and {Pontin}, David and {Verscharen}, Daniel and {Shen}, Fang},
@@ -117,6 +117,26 @@ archivePrefix = {arXiv},
  primaryClass = {astro-ph.SR},
        adsurl = {https://ui.adsabs.harvard.edu/abs/2026arXiv260401028W},
       adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+
+@software{wu_2026_19921187,
+  author       = {Wu, Ziqi},
+  title        = {NSPF: a Non-Spherical Potential Field for coronal
+                   magnetic field extrapolations
+                  },
+  month        = apr,
+  year         = 2026,
+  publisher    = {Zenodo},
+  version      = {v1.0},
+  doi          = {10.5281/zenodo.19921187},
+  url          = {https://doi.org/10.5281/zenodo.19921187},
+  swhid        = {swh:1:dir:873b023ebc2591bf640a10a26edcef54f744a114
+                   ;origin=https://doi.org/10.5281/zenodo.19921186;vi
+                   sit=swh:1:snp:4040f360fcd5abefd398e4ec7f3258f098e7
+                   92bc;anchor=swh:1:rel:2aced80575ac2c6a313056799b8c
+                   463d05c86d95;path=Non-
+                   Spherical\_Potential\_Field\_Model-1.0
+                  },
 }
 ~~~
 
