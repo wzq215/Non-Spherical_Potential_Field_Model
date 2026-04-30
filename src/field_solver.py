@@ -28,9 +28,10 @@ import math
 from scipy import interpolate
 import sunpy.map
 import sympy as sp
+from ufl import sqrt, sin, cos
 
 # MY MODULE
-import utils
+from src.utils import *
 
 def magmap_from_array(x, clm=[], l_max=30, **kwargs):
     """
@@ -260,7 +261,7 @@ def fem_solver(shell_path, shell_name,
             for dof in closure_dofs:
                 local_dof = cell_dofs[dof]
                 dof_coordinate = coords[local_dof]
-                dof_xyzrlatlon = utils.appendSpherical_np(dof_coordinate.T)
+                dof_xyzrlatlon = appendSpherical_np(dof_coordinate.T)
                 if dof_xyzrlatlon[5] < 0:
                     dof_xyzrlatlon[5] += np.pi * 2
                 dof_Bn = f_interp(np.rad2deg(dof_xyzrlatlon[5]), np.rad2deg(dof_xyzrlatlon[4]))

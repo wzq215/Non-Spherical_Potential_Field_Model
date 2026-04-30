@@ -28,7 +28,7 @@ import numpy as np
 import pyshtools as shtools
 import pyvista
 
-from utils import appendSpherical_np
+from src.utils import appendSpherical_np
 
 
 def source_surface_extractor(result_path, result_name,

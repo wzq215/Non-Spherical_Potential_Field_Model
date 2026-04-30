@@ -41,7 +41,7 @@ pv.global_theme.allow_empty_mesh = True
 
 def combine_in_out(result_path, inner_result_name, outer_result_name,
                    ss_path, ss_name,
-                   plot_slice=True,slice_normal='z',slice_origin=[0,0,0]):
+                   plot_slice=False,slice_normal='z',slice_origin=[0,0,0]):
     """
     Combine magnetic field lines traced from inner and outer NSPF solutions.
 

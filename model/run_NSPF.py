@@ -46,10 +46,10 @@ from src.sourcesurface_extractor import (
 # ---------------------------------------------------------------------
 # Path configuration
 # ---------------------------------------------------------------------
-PATH_2D = '../MESH/2D/'
-PATH_3D = '../MESH/3D/'
-PATH_RESULT = '../RESULT/'
-PATH_MAGMAP = '../data/magnetogram/'
+PATH_2D = 'MESH/2D/'
+PATH_3D = 'MESH/3D/'
+PATH_RESULT = 'RESULT/'
+PATH_MAGMAP = 'data/magnetogram/'
 
 # =====================================================================
 # ====================== USER INPUT BEGIN =============================

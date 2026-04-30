@@ -139,13 +139,13 @@ if __name__ == '__main__':
     # Magnetogram metadata and timestamp
     # ---------------------------------------------------------------
     magmap_name = 'mrzqs240331t2104c2282_050'
-    magmap_tag = magmap_name[-9:]
+    magmap_tag = magmap_name[-3:]
     magmap_dt = datetime.strptime(
         magmap_name[5:16], '%y%m%dt%H%M'
     )
 
     tag_tmp = magmap_tag
-    magmap_tmp = sunpy.map.Map('magnetogram/' + magmap_name)
+    magmap_tmp = sunpy.map.Map('data/magnetogram/' + magmap_name+'.fits.gz')
 
     # ---------------------------------------------------------------
     # Retrieve LASCO C2 observations near magnetogram time
@@ -223,7 +223,7 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------
     # NSPF result paths and naming conventions
     # ---------------------------------------------------------------
-    PATH_2D = '../MESH/2D/'
+    PATH_2D = 'MESH/2D/'
     PATH_RESULT = (
         f'RESULT/CR2282_E19/NSPF_Rss2d5_Ref3/{tag_tmp}/'
     )
